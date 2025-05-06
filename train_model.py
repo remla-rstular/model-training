@@ -3,7 +3,7 @@ import sys
 
 import joblib
 import pandas as pd
-from lib_ml.preprocess import TextPreprocessor
+from lib_ml.preprocess import process_text
 from loguru import logger
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -70,20 +70,28 @@ reviews = df["Review"]
 ratings = df["Liked"]
 
 if args.test_split == 0.0:
-    X_train, X_test, y_train, y_test = reviews, [], ratings, []
+    X_train_raw, X_test_raw, y_train, y_test = reviews, [], ratings, []
 else:
-    X_train, X_test, y_train, y_test = train_test_split(
+    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
         reviews, ratings, test_size=args.test_split, random_state=args.random_state
     )
-logger.info(f"Split the data into {len(X_train)} training and {len(X_test)} testing samples.")
+logger.info(
+    f"Split the data into {len(X_train_raw)} training and {len(X_test_raw)} testing samples."
+)
 
 model = Pipeline(
     [
-        ("text_preprocessor", TextPreprocessor()),
         ("tfidf", TfidfVectorizer(max_features=10000, ngram_range=(1, 2), stop_words="english")),
         ("classifier", LogisticRegression(max_iter=1000, random_state=args.random_state)),
     ]
 )
+
+X_train = process_text(X_train_raw)
+X_test = process_text(X_test_raw)
+if X_train is None:
+    logger.error("Preprocessing failed. Exiting.")
+    sys.exit(1)
+
 model.fit(X_train, y_train)
 logger.info("Model training completed.")
 

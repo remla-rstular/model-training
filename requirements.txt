@@ -1,4 +1,4 @@
-lib-ml @ https://github.com/remla-rstular/lib-ml/releases/download/v0.0.2/lib_ml-0.0.2-py3-none-any.whl
+lib-ml @ https://github.com/remla-rstular/lib-ml/releases/download/v0.0.4/lib_ml-0.0.4-py3-none-any.whl
 loguru==0.7.3
 pandas==2.2.3
 scikit-learn==1.6.1
