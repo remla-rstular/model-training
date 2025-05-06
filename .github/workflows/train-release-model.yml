@@ -1,0 +1,49 @@
+name: Release Trained Model
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Train model
+        run: |
+          python train_model.py data/a1_RestaurantReviews_HistoricDump.tsv -t 0.0 -o sentiment_model.pkl
+
+      - name: Upload model to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentiment_model
+          path: sentiment_model.pkl
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Automated release of sentiment detection model.
+            Version: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            sentiment_model.pkl
