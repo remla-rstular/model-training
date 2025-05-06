@@ -26,7 +26,11 @@ parser.add_argument(
     nargs="?",
 )
 parser.add_argument(
-    "--output-model", "-o", type=str, default="sentiment_model.pkl", help="Path to save the trained model."
+    "--output-model",
+    "-o",
+    type=str,
+    default="sentiment_model.pkl",
+    help="Path to save the trained model.",
 )
 parser.add_argument(
     "-t",
